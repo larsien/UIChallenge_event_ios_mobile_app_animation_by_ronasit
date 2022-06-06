@@ -16,6 +16,7 @@ class _DetailPageState extends State<DetailPage>
   late Animation<double> gpsScaleAnimation;
   late Animation<double> timerScaleAnimation;
   late Animation<Offset> mainInfoBodySlideAnimation;
+  late Animation<double> mainInfoTimeFadeInAnimation;
   late AnimationController controller;
 
   @override
@@ -38,7 +39,10 @@ class _DetailPageState extends State<DetailPage>
             .animate(CurvedAnimation(
                 parent: controller,
                 curve: const Interval(0.5, 1.0, curve: Curves.ease)));
-
+    mainInfoTimeFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: controller,
+            curve: const Interval(0.5, 1.0, curve: Curves.ease)));
     controller.forward();
   }
 
@@ -46,11 +50,13 @@ class _DetailPageState extends State<DetailPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: HeaderImageAppBar(
-          index: widget.index,
-          calendarScaleAnimation: calendarScaleAnimation,
-          gpsScaleAnimation: gpsScaleAnimation,
-          timerScaleAnimation: timerScaleAnimation,
-          mainInfoBodySlideAnimation: mainInfoBodySlideAnimation),
+        index: widget.index,
+        calendarScaleAnimation: calendarScaleAnimation,
+        gpsScaleAnimation: gpsScaleAnimation,
+        timerScaleAnimation: timerScaleAnimation,
+        mainInfoBodySlideAnimation: mainInfoBodySlideAnimation,
+        mainInfoTimeFadeInAnimation: mainInfoTimeFadeInAnimation,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
@@ -86,12 +92,14 @@ class BodyMainInfoWidget extends StatelessWidget {
     required this.calendarScaleAnimation,
     required this.gpsScaleAnimation,
     required this.timerScaleAnimation,
+    required this.mainInfoTimeFadeInAnimation,
     required this.index,
   });
 
   final Animation<double> calendarScaleAnimation;
   final Animation<double> gpsScaleAnimation;
   final Animation<double> timerScaleAnimation;
+  final Animation<double> mainInfoTimeFadeInAnimation;
   final int index;
   @override
   Widget build(BuildContext context) {
@@ -152,7 +160,9 @@ class BodyMainInfoWidget extends StatelessWidget {
                           color: Color(primaryRedColor),
                         )),
                     const SizedBox(width: 5),
-                    const Text("8:00 AM - 10:00 PM")
+                    FadeTransition(
+                        opacity: mainInfoTimeFadeInAnimation,
+                        child: const Text("8:00 AM - 10:00 PM"))
                   ],
                 ),
               ],
@@ -171,11 +181,13 @@ class HeaderImageAppBar extends StatelessWidget with PreferredSizeWidget {
       required this.calendarScaleAnimation,
       required this.gpsScaleAnimation,
       required this.timerScaleAnimation,
-      required this.mainInfoBodySlideAnimation});
+      required this.mainInfoBodySlideAnimation,
+      required this.mainInfoTimeFadeInAnimation});
   final Animation<double> calendarScaleAnimation;
   final Animation<double> gpsScaleAnimation;
   final Animation<double> timerScaleAnimation;
   final Animation<Offset> mainInfoBodySlideAnimation;
+  final Animation<double> mainInfoTimeFadeInAnimation;
 
   final int index;
 
@@ -207,7 +219,8 @@ class HeaderImageAppBar extends StatelessWidget with PreferredSizeWidget {
                   index: index,
                   calendarScaleAnimation: calendarScaleAnimation,
                   gpsScaleAnimation: gpsScaleAnimation,
-                  timerScaleAnimation: timerScaleAnimation),
+                  timerScaleAnimation: timerScaleAnimation,
+                  mainInfoTimeFadeInAnimation: mainInfoTimeFadeInAnimation),
             ),
           ),
         ],
