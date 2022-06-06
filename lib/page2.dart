@@ -2,7 +2,7 @@ import 'package:event_ios_mobile_app_animation_by_ronasit/common.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-import 'page3.dart';
+import 'Page3.dart';
 
 class LastResultPage extends StatefulWidget {
   const LastResultPage({super.key});
