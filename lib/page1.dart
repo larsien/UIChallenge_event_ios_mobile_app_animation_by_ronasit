@@ -1,12 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-
-import 'Page2.dart';
 import 'common.dart';
-
-void main() {
-  runApp(const MyApp());
-}
+import 'Page2.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -85,6 +80,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
             const LastResultPage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);
+          // var tween2 = tween.chain(curveTween);
           return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: FadeTransition(opacity: opacityTween, child: child));
@@ -94,9 +90,9 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
 
 class MainBody extends StatelessWidget {
   const MainBody({
-    super.key,
+    Key? key,
     required this.slideAnimation,
-  });
+  }) : super(key: key);
 
   final Animation<Offset> slideAnimation;
 
@@ -122,6 +118,7 @@ class MainBody extends StatelessWidget {
           ),
         ),
       ),
+      // ),
     );
   }
 }
@@ -135,6 +132,7 @@ class CardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         elevation: 10,
+        // margin: EdgeInsets.only(bottom: 40),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,6 +173,7 @@ class CardContent extends StatelessWidget {
                 ],
               ),
             ),
+            // )
           ],
         ));
   }
@@ -212,6 +211,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         padding: const EdgeInsets.only(left: 55.0),
         child: Container(
           decoration: const BoxDecoration(
+              // shape: BoxShape.circle,
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70)),
               color: Color.fromARGB(255, 184, 222, 240)),
         ),
