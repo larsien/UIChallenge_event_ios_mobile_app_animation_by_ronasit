@@ -351,8 +351,9 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(17),
-                            color:
-                                isMenu1Selected ? Colors.blue : Colors.white),
+                            color: isMenu1Selected
+                                ? const Color.fromARGB(255, 2, 58, 105)
+                                : Colors.white),
                         child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 25),
