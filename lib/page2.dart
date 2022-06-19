@@ -19,8 +19,8 @@ class _LastResultPageState extends State<LastResultPage>
   // late Animation<double> animation;
   late AnimationController controller;
   late Animation<Offset> cupMovingAnimation;
-  late Animation<double> rotateAnimation;
-  late Animation<double> opacityAnimation;
+  late Animation<double> cupRotateAnimation;
+  late Animation<double> cupOpacityAnimation;
   late Animation<Offset> headerTextMovingAnimation;
   late Animation<int> appBarTextStepAnimation;
 
@@ -31,7 +31,7 @@ class _LastResultPageState extends State<LastResultPage>
         AnimationController(duration: const Duration(seconds: 3), vsync: this);
 
     //for cup
-    rotateAnimation = Tween(begin: 0.0, end: 0.07).animate(CurvedAnimation(
+    cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(CurvedAnimation(
         parent: controller,
         curve: const Interval(0.0, 1,
             // curve: ShakeCurve(),
@@ -40,7 +40,7 @@ class _LastResultPageState extends State<LastResultPage>
             begin: const Offset(0, 1), end: const Offset(0, -0.12))
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
 
-    opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    cupOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
 
     //for text
@@ -51,122 +51,57 @@ class _LastResultPageState extends State<LastResultPage>
         .animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
     controller.forward();
   }
+  // Widget ListItemAnimation(Animation<double> Widget child){
+  //   return
 
+  // }
+  List<bool> boolList = [true, true, true];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomCoffeeAppBar(cupMovingAnimation, rotateAnimation,
-          opacityAnimation, appBarTextStepAnimation),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Header(
-              opacityAnimation: opacityAnimation,
-              textMovingAnimation: headerTextMovingAnimation),
-          Expanded(
-            child: ListView.builder(
-              itemCount: sampleContentList.length,
-              itemBuilder: (context, index) {
-                var item = sampleContentList[index];
-                return GestureDetector(
-                  onTap: () => Navigator.push(context, delayedRoute(index)),
-                  // MaterialPageRoute(builder: (contgext) => Page2(index))),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: [
-                            Text(item["dayOfWeek"]!,
-                                style: const TextStyle(fontSize: 12)),
-                            const SizedBox(height: 5),
-                            Text(item["day"]!,
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Color(primaryRedColor),
-                                    fontWeight: FontWeight.bold))
-                          ],
-                        ),
+      appBar: CustomCoffeeAppBar(cupMovingAnimation, cupRotateAnimation,
+          cupOpacityAnimation, appBarTextStepAnimation),
+      body: Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Header(
+                opacityAnimation: cupOpacityAnimation,
+                textMovingAnimation: headerTextMovingAnimation),
+            Expanded(
+              child: ListView.builder(
+                itemCount: sampleContentList.length,
+                itemBuilder: (context, index) {
+                  var item = sampleContentList[index];
+                  Animation<double> itemOpacityAnimation =
+                      Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                          parent: controller,
+                          curve: Interval(0.1 * index, 0.6 + index * 0.1,
+                              curve: Curves.linear)));
+                  Animation<Offset> itemSlideAnimation = Tween<Offset>(
+                          begin: const Offset(0, 0.3), end: Offset.zero)
+                      .animate(CurvedAnimation(
+                          parent: controller,
+                          curve: Interval(0.1 * index, 0.6 + index * 0.1,
+                              curve: Curves.linear)));
+                  return FadeTransition(
+                    opacity: itemOpacityAnimation,
+                    child: SlideTransition(
+                      position: itemSlideAnimation,
+                      child: GestureDetector(
+                        onTap: () =>
+                            Navigator.push(context, delayedRoute(index)),
+                        // MaterialPageRoute(builder: (contgext) => Page2(index))),
+                        child: Item(item: item, index: index),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Stack(
-                          children: [
-                            Hero(
-                              tag: "content$index",
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                elevation: 15,
-                                child: Row(
-                                  // mainAxisAlignment: MainAxisAlignment.end,
-                                  // mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: SizedBox(
-                                        width: 50,
-                                        height: 80,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(item["title"]!,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.clip,
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            const SizedBox(height: 5),
-                                            Text(item["location"]!)
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Hero(
-                              tag: "test$index",
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 12, top: 12),
-                                child: Container(
-                                  width: 50,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image:
-                                              //  Image.asset(item["image"]!)
-                                              AssetImage(
-                                            item["image"]!,
-                                          )),
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(20))),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
-            ),
-          )
-        ],
+                    ),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
 
@@ -184,6 +119,104 @@ class _LastResultPageState extends State<LastResultPage>
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+}
+
+class Item extends StatelessWidget {
+  const Item({Key? key, required this.item, required this.index})
+      : super(key: key);
+
+  final Map<String, String> item;
+  final int index;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      // crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Text(item["dayOfWeek"]!, style: const TextStyle(fontSize: 12)),
+              const SizedBox(height: 5),
+              Text(item["day"]!,
+                  style: const TextStyle(
+                      fontSize: 18,
+                      color: Color(primaryRedColor),
+                      fontWeight: FontWeight.bold))
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Stack(
+            children: [
+              Hero(
+                tag: "content$index",
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 15,
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.end,
+                    // mainAxisSize: MainAxisSize.max,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: 50,
+                          height: 80,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item["title"]!,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.clip,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 5),
+                              Text(item["location"]!)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Hero(
+                tag: "test$index",
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, top: 12),
+                  child: Container(
+                    width: 50,
+                    height: 80,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image:
+                                //  Image.asset(item["image"]!)
+                                AssetImage(
+                              item["image"]!,
+                            )),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20))),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
   }
 }
 

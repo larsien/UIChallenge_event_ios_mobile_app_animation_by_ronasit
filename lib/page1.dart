@@ -29,11 +29,12 @@ class MyHome extends StatefulWidget {
 class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
   late final AnimationController controller =
       AnimationController(vsync: this, duration: const Duration(seconds: 1));
-  List headers = <String>[];
+
   late Animation<Offset> animation;
   @override
   void initState() {
     super.initState();
+    // animation = Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0))
     animation = Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0))
         .animate(
             CurvedAnimation(parent: controller, curve: Curves.easeInCubic));
@@ -76,11 +77,9 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
 
   Route _createRoute() {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const LastResultPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        pageBuilder: (_, __, ___) => const LastResultPage(),
+        transitionsBuilder: (_, animation, __, child) {
           final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);
-          // var tween2 = tween.chain(curveTween);
           return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: FadeTransition(opacity: opacityTween, child: child));
