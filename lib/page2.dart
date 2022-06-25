@@ -154,68 +154,94 @@ class Item extends StatelessWidget {
             children: [
               Hero(
                 tag: "content$index",
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 15,
-                  child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.end,
-                    // mainAxisSize: MainAxisSize.max,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: 50,
-                          height: 80,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item["title"]!,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.clip,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 5),
-                              Text(item["location"]!)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: CardBody(item: item),
               ),
               Hero(
                 tag: "test$index",
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12, top: 12),
-                  child: Container(
-                    width: 50,
-                    height: 80,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image:
-                                //  Image.asset(item["image"]!)
-                                AssetImage(
-                              item["image"]!,
-                            )),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20))),
-                  ),
-                ),
+                child: CardImage(item: item),
               ),
             ],
           ),
         )
       ],
+    );
+  }
+}
+
+class CardImage extends StatelessWidget {
+  const CardImage({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
+
+  final Map<String, String> item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, top: 12),
+      child: Container(
+        width: 50,
+        height: 80,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                image:
+                    //  Image.asset(item["image"]!)
+                    AssetImage(
+                  item["image"]!,
+                )),
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
+      ),
+    );
+  }
+}
+
+class CardBody extends StatelessWidget {
+  const CardBody({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
+
+  final Map<String, String> item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 15,
+      child: Row(
+        // mainAxisAlignment: MainAxisAlignment.end,
+        // mainAxisSize: MainAxisSize.max,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 50,
+              height: 80,
+            ),
+          ),
+          SizedBox(
+            width: 200,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item["title"]!,
+                      maxLines: 2,
+                      overflow: TextOverflow.clip,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 5),
+                  Text(item["location"]!)
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -268,30 +294,35 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.bottomCenter, children: [
+    return Stack(children: [
       Padding(
-        padding: const EdgeInsets.only(bottom: 50.0),
+        padding: const EdgeInsets.only(
+          bottom: 50.0,
+        ),
         child: FadeTransition(
           opacity: widget.cupOpacityAnimation,
           child: Container(
             decoration: const BoxDecoration(
               color: Color(primaryBlueColor),
             ),
-            child: GrowTransition(
-                // animation: animation,
-                movingAnim: widget.cupMovingAnimation,
-                rotationAnim: widget.cupRotateAnimation,
-                child: SizedBox(
-                  height: 70,
-                  //https://www.pngwing.com/en/free-png-zqryl
-                  child: Image.asset(
-                    "images/coffee.png",
-                    fit: BoxFit.fitHeight,
-                  ),
-                )),
           ),
         ),
       ),
+      Positioned(
+          right: 80,
+          bottom: 50,
+          child: GrowTransition(
+              // animation: animation,
+              movingAnim: widget.cupMovingAnimation,
+              rotationAnim: widget.cupRotateAnimation,
+              child: SizedBox(
+                height: 70,
+                //https://www.pngwing.com/en/free-png-zqryl
+                child: Image.asset(
+                  "images/coffee.png",
+                  fit: BoxFit.fitHeight,
+                ),
+              ))),
       const Align(
           alignment: Alignment.bottomCenter,
           child: Divider(
@@ -419,19 +450,15 @@ class GrowTransition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-        alignment: Alignment.bottomCenter,
-        child: AnimatedBuilder(
-            animation: movingAnim,
-            builder: (context, child) {
-              return SlideTransition(
-                position: movingAnim,
-                child: RotationTransition(
-                    turns: rotationAnim,
-                    // alignment: Alignment.bottomCenter,
-                    child: child),
-              );
-              // return RotationTransition(turns: rotationAnim, child: child);
-            },
-            child: child));
+        alignment: Alignment.bottomRight,
+        child: SlideTransition(
+          position: movingAnim,
+          child: RotationTransition(
+              turns: rotationAnim,
+              // alignment: Alignment.bottomCenter,
+              child: child),
+        )
+        // return RotationTransition(turns: rotationAnim, child: child);
+        );
   }
 }
