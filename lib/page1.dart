@@ -34,7 +34,6 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // animation = Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0))
     animation = Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0))
         .animate(
             CurvedAnimation(parent: controller, curve: Curves.easeInCubic));
@@ -64,12 +63,13 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
           child: const Icon(
             Icons.search,
           )),
+//적용 후
       body: Column(
         children: [
           const SizedBox(height: 40),
           SlideTransition(position: animation, child: const HeaderList()),
           const SizedBox(height: 20),
-          MainBody(slideAnimation: animation),
+          SlideTransition(position: animation, child: const MainBody()),
         ],
       ),
     );
@@ -78,7 +78,8 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
   Route _createRoute() {
     return PageRouteBuilder(
         pageBuilder: (_, __, ___) => const LastResultPage(),
-        transitionsBuilder: (_, animation, __, child) {
+        transitionDuration: const Duration(seconds: 1),
+        transitionsBuilder: (_, animation, secondaryAnimation, child) {
           final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);
           return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -90,34 +91,27 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
 class MainBody extends StatelessWidget {
   const MainBody({
     Key? key,
-    required this.slideAnimation,
   }) : super(key: key);
-
-  final Animation<Offset> slideAnimation;
 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: slideAnimation,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          height: 340,
-          child: ListView.builder(
-            padding: const EdgeInsets.only(
-              left: 20,
-              bottom: 40,
-            ),
-            scrollDirection: Axis.horizontal,
-            itemCount: 3,
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              return const CardContent();
-            },
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        height: 340,
+        child: ListView.builder(
+          padding: const EdgeInsets.only(
+            left: 20,
+            bottom: 40,
           ),
+          scrollDirection: Axis.horizontal,
+          itemCount: 3,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            return const CardContent();
+          },
         ),
       ),
-      // ),
     );
   }
 }

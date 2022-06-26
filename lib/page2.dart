@@ -31,13 +31,10 @@ class _LastResultPageState extends State<LastResultPage>
         AnimationController(duration: const Duration(seconds: 3), vsync: this);
 
     //for cup
-    cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.0, 1,
-            // curve: ShakeCurve(),
-            curve: Curves.elasticInOut)));
+    cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(
+        CurvedAnimation(parent: controller, curve: const ShakeCurve(count: 3)));
     cupMovingAnimation = Tween(
-            begin: const Offset(0, 1), end: const Offset(0, -0.12))
+            begin: const Offset(0, 1), end: const Offset(0, 0))
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
 
     cupOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
@@ -66,9 +63,13 @@ class _LastResultPageState extends State<LastResultPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Header(
-                opacityAnimation: cupOpacityAnimation,
-                textMovingAnimation: headerTextMovingAnimation),
+            FadeTransition(
+              opacity: cupOpacityAnimation,
+              child: SlideTransition(
+                position: headerTextMovingAnimation,
+                child: const Header(),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: sampleContentList.length,
@@ -249,25 +250,14 @@ class CardBody extends StatelessWidget {
 class Header extends StatelessWidget {
   const Header({
     Key? key,
-    required this.opacityAnimation,
-    required this.textMovingAnimation,
   }) : super(key: key);
-
-  final Animation<double> opacityAnimation;
-  final Animation<Offset> textMovingAnimation;
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: opacityAnimation,
-      child: SlideTransition(
-        position: textMovingAnimation,
-        child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text("Last results",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ),
-      ),
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Text("Last results",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
     );
   }
 }
@@ -310,11 +300,13 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
       ),
       Positioned(
           right: 80,
-          bottom: 50,
-          child: GrowTransition(
+          bottom: 60,
+          child: CupTransition(
+              //적용 전
               // animation: animation,
               movingAnim: widget.cupMovingAnimation,
               rotationAnim: widget.cupRotateAnimation,
+              opacityAnim: widget.cupOpacityAnimation,
               child: SizedBox(
                 height: 70,
                 //https://www.pngwing.com/en/free-png-zqryl
@@ -433,32 +425,32 @@ class ShakeCurve extends Curve {
   }
 }
 
-class GrowTransition extends StatelessWidget {
-  const GrowTransition({
+class CupTransition extends StatelessWidget {
+  const CupTransition({
     super.key,
     required this.child,
     // required this.animation,
     required this.movingAnim,
     required this.rotationAnim,
+    required this.opacityAnim,
   });
 
   final Widget child;
   // final Animation<double> animation;
   final Animation<Offset> movingAnim;
   final Animation<double> rotationAnim;
+  final Animation<double> opacityAnim;
 
   @override
   Widget build(BuildContext context) {
     return Align(
         alignment: Alignment.bottomRight,
-        child: SlideTransition(
-          position: movingAnim,
-          child: RotationTransition(
-              turns: rotationAnim,
-              // alignment: Alignment.bottomCenter,
-              child: child),
-        )
-        // return RotationTransition(turns: rotationAnim, child: child);
-        );
+        child: FadeTransition(
+          opacity: opacityAnim,
+          child: SlideTransition(
+            position: movingAnim,
+            child: RotationTransition(turns: rotationAnim, child: child),
+          ),
+        ));
   }
 }
