@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'common.dart';
-import 'Page2.dart';
+import 'page2.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,18 +15,18 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const MyHome());
+        home: const Page1());
   }
 }
 
-class MyHome extends StatefulWidget {
-  const MyHome({Key? key}) : super(key: key);
+class Page1 extends StatefulWidget {
+  const Page1({super.key});
 
   @override
-  State<MyHome> createState() => _MyHomeState();
+  State<Page1> createState() => _Page1State();
 }
 
-class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
+class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
   late final AnimationController controller =
       AnimationController(vsync: this, duration: const Duration(seconds: 1));
 
@@ -63,7 +63,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
           child: const Icon(
             Icons.search,
           )),
-//적용 후
+      //적용 후
       body: Column(
         children: [
           const SizedBox(height: 40),
@@ -77,7 +77,7 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
 
   Route _createRoute() {
     return PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const LastResultPage(),
+        pageBuilder: (_, __, ___) => const Page2(),
         transitionDuration: const Duration(seconds: 1),
         transitionsBuilder: (_, animation, secondaryAnimation, child) {
           final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);

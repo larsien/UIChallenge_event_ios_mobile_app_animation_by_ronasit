@@ -4,48 +4,31 @@ import 'dart:math';
 
 import 'Page3.dart';
 
-class LastResultPage extends StatefulWidget {
-  const LastResultPage({super.key});
+class Page2 extends StatefulWidget {
+  const Page2({super.key});
 
   @override
-  State<LastResultPage> createState() => _LastResultPageState();
+  State<Page2> createState() => _Page2State();
 }
 
-//1
-const String appBarSearchText = "Search for ... ";
-
-class _LastResultPageState extends State<LastResultPage>
-    with SingleTickerProviderStateMixin {
+class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
   // late Animation<double> animation;
   late AnimationController controller;
-  late Animation<Offset> cupMovingAnimation;
-  late Animation<double> cupRotateAnimation;
-  late Animation<double> cupOpacityAnimation;
+  late Animation<double> headerTextOpacityAnimation;
   late Animation<Offset> headerTextMovingAnimation;
-  late Animation<int> appBarTextStepAnimation;
 
   @override
   void initState() {
     super.initState();
     controller =
         AnimationController(duration: const Duration(seconds: 3), vsync: this);
-
-    //for cup
-    cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(
-        CurvedAnimation(parent: controller, curve: const ShakeCurve(count: 3)));
-    cupMovingAnimation = Tween(
-            begin: const Offset(0, 1), end: const Offset(0, 0))
-        .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
-
-    cupOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    //for text
+    headerTextOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
 
-    //for text
     headerTextMovingAnimation = Tween<Offset>(
             begin: const Offset(0, 1), end: const Offset(0, 0))
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
-    appBarTextStepAnimation = StepTween(begin: 0, end: appBarSearchText.length)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
     controller.forward();
   }
   // Widget ListItemAnimation(Animation<double> Widget child){
@@ -56,51 +39,20 @@ class _LastResultPageState extends State<LastResultPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomCoffeeAppBar(cupMovingAnimation, cupRotateAnimation,
-          cupOpacityAnimation, appBarTextStepAnimation),
+      appBar: CustomCoffeeAppBar(controller),
       body: Container(
         decoration: const BoxDecoration(color: Colors.white),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FadeTransition(
-              opacity: cupOpacityAnimation,
+              opacity: headerTextOpacityAnimation,
               child: SlideTransition(
                 position: headerTextMovingAnimation,
                 child: const Header(),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: sampleContentList.length,
-                itemBuilder: (context, index) {
-                  var item = sampleContentList[index];
-                  Animation<double> itemOpacityAnimation =
-                      Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-                          parent: controller,
-                          curve: Interval(0.1 * index, 0.6 + index * 0.1,
-                              curve: Curves.linear)));
-                  Animation<Offset> itemSlideAnimation = Tween<Offset>(
-                          begin: const Offset(0, 0.3), end: Offset.zero)
-                      .animate(CurvedAnimation(
-                          parent: controller,
-                          curve: Interval(0.1 * index, 0.6 + index * 0.1,
-                              curve: Curves.linear)));
-                  return FadeTransition(
-                    opacity: itemOpacityAnimation,
-                    child: SlideTransition(
-                      position: itemSlideAnimation,
-                      child: GestureDetector(
-                        onTap: () =>
-                            Navigator.push(context, delayedRoute(index)),
-                        // MaterialPageRoute(builder: (contgext) => Page2(index))),
-                        child: Item(item: item, index: index),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
+            Body(controller: controller)
           ],
         ),
       ),
@@ -109,17 +61,55 @@ class _LastResultPageState extends State<LastResultPage>
     // return const FlutterLogo();
   }
 
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+}
+
+class Body extends StatelessWidget {
+  const Body({super.key, required this.controller});
+  final AnimationController controller;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: sampleContentList.length,
+        itemBuilder: (context, index) {
+          var item = sampleContentList[index];
+          Animation<double> itemOpacityAnimation = Tween(begin: 0.0, end: 1.0)
+              .animate(CurvedAnimation(
+                  parent: controller,
+                  curve: Interval(0.1 * index, 0.6 + index * 0.1,
+                      curve: Curves.linear)));
+          Animation<Offset> itemSlideAnimation =
+              Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
+                  .animate(CurvedAnimation(
+                      parent: controller,
+                      curve: Interval(0.1 * index, 0.6 + index * 0.1,
+                          curve: Curves.linear)));
+          return FadeTransition(
+            opacity: itemOpacityAnimation,
+            child: SlideTransition(
+              position: itemSlideAnimation,
+              child: GestureDetector(
+                onTap: () => Navigator.push(context, delayedRoute(index)),
+                // MaterialPageRoute(builder: (contgext) => Page2(index))),
+                child: Item(item: item, index: index),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Route delayedRoute(int index) {
     return PageRouteBuilder(
       pageBuilder: (_, __, ___) => DetailPage(index),
       transitionDuration: const Duration(milliseconds: 1200),
     );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 }
 
@@ -265,13 +255,8 @@ class Header extends StatelessWidget {
 class CustomCoffeeAppBar extends StatefulWidget with PreferredSizeWidget {
 // class CustomAppBar extends AppBar {
   // ignore: use_key_in_widget_constructors
-  CustomCoffeeAppBar(this.cupMovingAnimation, this.cupRotateAnimation,
-      this.cupOpacityAnimation, this.textStepAnimation);
-  final Animation<Offset> cupMovingAnimation;
-  final Animation<double> cupRotateAnimation;
-  final Animation<double> cupOpacityAnimation;
-  final Animation<int> textStepAnimation;
-
+  CustomCoffeeAppBar(this.controller);
+  final AnimationController controller;
   @override
   State<CustomCoffeeAppBar> createState() => _CustomCoffeeAppBarState();
 
@@ -280,137 +265,216 @@ class CustomCoffeeAppBar extends StatefulWidget with PreferredSizeWidget {
 }
 
 class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
-  bool isMenu1Selected = true;
+  late AnimationController controller;
+  late Animation<Offset> cupMovingAnimation;
+  late Animation<double> cupRotateAnimation;
+  late Animation<double> cupOpacityAnimation;
+  late Animation<int> textStepAnimation;
+  final String appBarSearchText = "Search for ...";
+  @override
+  void initState() {
+    controller = widget.controller;
+    //for cup
+    cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(
+        CurvedAnimation(parent: controller, curve: const ShakeCurve(count: 3)));
+    cupMovingAnimation = Tween(
+            begin: const Offset(0, 1), end: const Offset(0, 0))
+        .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
+
+    cupOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
+    textStepAnimation = StepTween(begin: 0, end: appBarSearchText.length)
+        .animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Padding(
-        padding: const EdgeInsets.only(
-          bottom: 50.0,
-        ),
-        child: FadeTransition(
-          opacity: widget.cupOpacityAnimation,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Color(primaryBlueColor),
-            ),
-          ),
-        ),
+      FadeTransition(
+        opacity: cupOpacityAnimation,
+        child: const AppBarBackground(),
       ),
-      Positioned(
-          right: 80,
-          bottom: 60,
-          child: CupTransition(
-              //적용 전
-              // animation: animation,
-              movingAnim: widget.cupMovingAnimation,
-              rotationAnim: widget.cupRotateAnimation,
-              opacityAnim: widget.cupOpacityAnimation,
-              child: SizedBox(
-                height: 70,
-                //https://www.pngwing.com/en/free-png-zqryl
-                child: Image.asset(
-                  "images/coffee.png",
-                  fit: BoxFit.fitHeight,
-                ),
-              ))),
-      const Align(
-          alignment: Alignment.bottomCenter,
-          child: Divider(
-            thickness: 60,
-            color: Colors.white,
-            // decoration: const BoxDecoration(color: Colors.blue),
-            // child: const SizedBox(height: 60))
-          )),
       Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: FadeTransition(
-              opacity: widget.cupOpacityAnimation,
-              child: AnimatedBuilder(
-                builder: (context, child) {
-                  String text = appBarSearchText.substring(
-                      0, widget.textStepAnimation.value);
-                  return Text(text,
-                      style: const TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold));
-                },
-                animation: widget.textStepAnimation,
+        alignment: const Alignment(0.5, 0.6),
+        child: CupTransition(
+            //적용 전
+            // animation: animation,
+            movingAnim: cupMovingAnimation,
+            rotationAnim: cupRotateAnimation,
+            opacityAnim: cupOpacityAnimation,
+            child: SizedBox(
+              height: 70,
+              //https://www.pngwing.com/en/free-png-zqryl
+              child: Image.asset(
+                "images/coffee.png",
+                fit: BoxFit.fitHeight,
               ),
             )),
       ),
-      Padding(
-        padding: const EdgeInsets.only(bottom: 40),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: 40,
-            width: 200,
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      blurStyle: BlurStyle.outer,
-                      offset: Offset(0.5, 0.5),
-                      blurRadius: 0.1,
-                      spreadRadius: 0.1)
-                ],
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                InkWell(
-                    onTap: () {
-                      isMenu1Selected = true;
-                      setState(() {});
-                    },
-                    child: Container(
-                        // width: 60,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(17),
-                            color: isMenu1Selected
-                                ? const Color.fromARGB(255, 2, 58, 105)
-                                : Colors.white),
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 25),
-                            child: Text('Events',
-                                style: TextStyle(
-                                    color: isMenu1Selected
-                                        ? Colors.white
-                                        : Colors.grey))))),
-                const SizedBox(
-                  width: 10,
-                ),
-                InkWell(
-                    onTap: () {
-                      isMenu1Selected = false;
-                      setState(() {});
-                    },
-                    child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(17),
-                            color:
-                                isMenu1Selected ? Colors.white : Colors.blue),
-                        child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text('Organizers',
-                                style: TextStyle(
-                                    color: isMenu1Selected
-                                        ? Colors.grey
-                                        : Colors.white))))),
-              ]),
-            ),
+      const AppBarBottomWhiteBackground(),
+      SearchForTextWidget(
+        cupOpacityAnimation: cupOpacityAnimation,
+        textStepAnimation: textStepAnimation,
+        appBarSearchText: appBarSearchText,
+      ),
+      const MenuBar(),
+    ]);
+  }
+}
+
+class MenuBar extends StatefulWidget {
+  const MenuBar({Key? key}) : super(key: key);
+
+  @override
+  State<MenuBar> createState() => _MenuBarState();
+}
+
+class _MenuBarState extends State<MenuBar> {
+  bool isMenu1Selected = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 40),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: 40,
+          width: 200,
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                    blurStyle: BlurStyle.outer,
+                    offset: Offset(0.5, 0.5),
+                    blurRadius: 0.1,
+                    spreadRadius: 0.1)
+              ],
+              borderRadius: BorderRadius.all(Radius.circular(20))),
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              InkWell(
+                  onTap: () {
+                    isMenu1Selected = true;
+                    setState(() {});
+                  },
+                  child: Container(
+                      // width: 60,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(17),
+                          color: isMenu1Selected
+                              ? const Color.fromARGB(255, 2, 58, 105)
+                              : Colors.white),
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 25),
+                          child: Text('Events',
+                              style: TextStyle(
+                                  color: isMenu1Selected
+                                      ? Colors.white
+                                      : Colors.grey))))),
+              const SizedBox(
+                width: 10,
+              ),
+              InkWell(
+                  onTap: () {
+                    isMenu1Selected = false;
+                    setState(() {});
+                  },
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(17),
+                          color: isMenu1Selected ? Colors.white : Colors.blue),
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text('Organizers',
+                              style: TextStyle(
+                                  color: isMenu1Selected
+                                      ? Colors.grey
+                                      : Colors.white))))),
+            ]),
           ),
         ),
-      )
-    ]);
+      ),
+    );
+  }
+}
+
+class SearchForTextWidget extends StatelessWidget {
+  const SearchForTextWidget({
+    super.key,
+    required this.cupOpacityAnimation,
+    required this.textStepAnimation,
+    required this.appBarSearchText,
+  });
+  final String appBarSearchText;
+  final Animation<double> cupOpacityAnimation;
+  final Animation<int> textStepAnimation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: FadeTransition(
+            opacity: cupOpacityAnimation,
+            child: AnimatedBuilder(
+              builder: (context, child) {
+                String text =
+                    appBarSearchText.substring(0, textStepAnimation.value);
+                return Text(text,
+                    style: const TextStyle(
+                        fontSize: 22,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold));
+              },
+              animation: textStepAnimation,
+            ),
+          )),
+    );
+  }
+}
+
+class AppBarBottomWhiteBackground extends StatelessWidget {
+  const AppBarBottomWhiteBackground({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Align(
+        alignment: Alignment.bottomCenter,
+        child: Divider(
+          thickness: 60,
+          color: Colors.white,
+          // decoration: const BoxDecoration(color: Colors.blue),
+          // child: const SizedBox(height: 60))
+        ));
+  }
+}
+
+class AppBarBackground extends StatelessWidget {
+  const AppBarBackground({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: 50.0,
+      ),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Color(primaryBlueColor),
+        ),
+      ),
+    );
   }
 }
 
@@ -443,14 +507,12 @@ class CupTransition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-        alignment: Alignment.bottomRight,
-        child: FadeTransition(
-          opacity: opacityAnim,
-          child: SlideTransition(
-            position: movingAnim,
-            child: RotationTransition(turns: rotationAnim, child: child),
-          ),
-        ));
+    return FadeTransition(
+      opacity: opacityAnim,
+      child: SlideTransition(
+        position: movingAnim,
+        child: RotationTransition(turns: rotationAnim, child: child),
+      ),
+    );
   }
 }
