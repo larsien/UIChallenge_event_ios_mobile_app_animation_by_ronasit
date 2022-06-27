@@ -19,8 +19,8 @@ class _LastResultPageState extends State<LastResultPage>
   // late Animation<double> animation;
   late AnimationController controller;
   late Animation<Offset> cupMovingAnimation;
-  late Animation<double> rotateAnimation;
-  late Animation<double> opacityAnimation;
+  late Animation<double> cupRotateAnimation;
+  late Animation<double> cupOpacityAnimation;
   late Animation<Offset> headerTextMovingAnimation;
   late Animation<int> appBarTextStepAnimation;
 
@@ -31,16 +31,13 @@ class _LastResultPageState extends State<LastResultPage>
         AnimationController(duration: const Duration(seconds: 3), vsync: this);
 
     //for cup
-    rotateAnimation = Tween(begin: 0.0, end: 0.07).animate(CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.0, 1,
-            // curve: ShakeCurve(),
-            curve: Curves.elasticInOut)));
+    cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(
+        CurvedAnimation(parent: controller, curve: const ShakeCurve(count: 3)));
     cupMovingAnimation = Tween(
-            begin: const Offset(0, 1), end: const Offset(0, -0.12))
+            begin: const Offset(0, 1), end: const Offset(0, 0))
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
 
-    opacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    cupOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
 
     //for text
@@ -51,122 +48,61 @@ class _LastResultPageState extends State<LastResultPage>
         .animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
     controller.forward();
   }
+  // Widget ListItemAnimation(Animation<double> Widget child){
+  //   return
 
+  // }
+  List<bool> boolList = [true, true, true];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomCoffeeAppBar(cupMovingAnimation, rotateAnimation,
-          opacityAnimation, appBarTextStepAnimation),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Header(
-              opacityAnimation: opacityAnimation,
-              textMovingAnimation: headerTextMovingAnimation),
-          Expanded(
-            child: ListView.builder(
-              itemCount: sampleContentList.length,
-              itemBuilder: (context, index) {
-                var item = sampleContentList[index];
-                return GestureDetector(
-                  onTap: () => Navigator.push(context, delayedRoute(index)),
-                  // MaterialPageRoute(builder: (contgext) => Page2(index))),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: [
-                            Text(item["dayOfWeek"]!,
-                                style: const TextStyle(fontSize: 12)),
-                            const SizedBox(height: 5),
-                            Text(item["day"]!,
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Color(primaryRedColor),
-                                    fontWeight: FontWeight.bold))
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Stack(
-                          children: [
-                            Hero(
-                              tag: "content$index",
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                elevation: 15,
-                                child: Row(
-                                  // mainAxisAlignment: MainAxisAlignment.end,
-                                  // mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: SizedBox(
-                                        width: 50,
-                                        height: 80,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(item["title"]!,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.clip,
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            const SizedBox(height: 5),
-                                            Text(item["location"]!)
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Hero(
-                              tag: "test$index",
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 12, top: 12),
-                                child: Container(
-                                  width: 50,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image:
-                                              //  Image.asset(item["image"]!)
-                                              AssetImage(
-                                            item["image"]!,
-                                          )),
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(20))),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
+      appBar: CustomCoffeeAppBar(cupMovingAnimation, cupRotateAnimation,
+          cupOpacityAnimation, appBarTextStepAnimation),
+      body: Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FadeTransition(
+              opacity: cupOpacityAnimation,
+              child: SlideTransition(
+                position: headerTextMovingAnimation,
+                child: const Header(),
+              ),
             ),
-          )
-        ],
+            Expanded(
+              child: ListView.builder(
+                itemCount: sampleContentList.length,
+                itemBuilder: (context, index) {
+                  var item = sampleContentList[index];
+                  Animation<double> itemOpacityAnimation =
+                      Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                          parent: controller,
+                          curve: Interval(0.1 * index, 0.6 + index * 0.1,
+                              curve: Curves.linear)));
+                  Animation<Offset> itemSlideAnimation = Tween<Offset>(
+                          begin: const Offset(0, 0.3), end: Offset.zero)
+                      .animate(CurvedAnimation(
+                          parent: controller,
+                          curve: Interval(0.1 * index, 0.6 + index * 0.1,
+                              curve: Curves.linear)));
+                  return FadeTransition(
+                    opacity: itemOpacityAnimation,
+                    child: SlideTransition(
+                      position: itemSlideAnimation,
+                      child: GestureDetector(
+                        onTap: () =>
+                            Navigator.push(context, delayedRoute(index)),
+                        // MaterialPageRoute(builder: (contgext) => Page2(index))),
+                        child: Item(item: item, index: index),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
 
@@ -187,28 +123,141 @@ class _LastResultPageState extends State<LastResultPage>
   }
 }
 
-class Header extends StatelessWidget {
-  const Header({
+class Item extends StatelessWidget {
+  const Item({Key? key, required this.item, required this.index})
+      : super(key: key);
+
+  final Map<String, String> item;
+  final int index;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      // crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Text(item["dayOfWeek"]!, style: const TextStyle(fontSize: 12)),
+              const SizedBox(height: 5),
+              Text(item["day"]!,
+                  style: const TextStyle(
+                      fontSize: 18,
+                      color: Color(primaryRedColor),
+                      fontWeight: FontWeight.bold))
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Stack(
+            children: [
+              Hero(
+                tag: "content$index",
+                child: CardBody(item: item),
+              ),
+              Hero(
+                tag: "test$index",
+                child: CardImage(item: item),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class CardImage extends StatelessWidget {
+  const CardImage({
     Key? key,
-    required this.opacityAnimation,
-    required this.textMovingAnimation,
+    required this.item,
   }) : super(key: key);
 
-  final Animation<double> opacityAnimation;
-  final Animation<Offset> textMovingAnimation;
+  final Map<String, String> item;
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: opacityAnimation,
-      child: SlideTransition(
-        position: textMovingAnimation,
-        child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text("Last results",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, top: 12),
+      child: Container(
+        width: 50,
+        height: 80,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                image:
+                    //  Image.asset(item["image"]!)
+                    AssetImage(
+                  item["image"]!,
+                )),
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
       ),
+    );
+  }
+}
+
+class CardBody extends StatelessWidget {
+  const CardBody({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
+
+  final Map<String, String> item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 15,
+      child: Row(
+        // mainAxisAlignment: MainAxisAlignment.end,
+        // mainAxisSize: MainAxisSize.max,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 50,
+              height: 80,
+            ),
+          ),
+          SizedBox(
+            width: 200,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item["title"]!,
+                      maxLines: 2,
+                      overflow: TextOverflow.clip,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 5),
+                  Text(item["location"]!)
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Header extends StatelessWidget {
+  const Header({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Text("Last results",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
     );
   }
 }
@@ -235,30 +284,37 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.bottomCenter, children: [
+    return Stack(children: [
       Padding(
-        padding: const EdgeInsets.only(bottom: 50.0),
+        padding: const EdgeInsets.only(
+          bottom: 50.0,
+        ),
         child: FadeTransition(
           opacity: widget.cupOpacityAnimation,
           child: Container(
             decoration: const BoxDecoration(
               color: Color(primaryBlueColor),
             ),
-            child: GrowTransition(
-                // animation: animation,
-                movingAnim: widget.cupMovingAnimation,
-                rotationAnim: widget.cupRotateAnimation,
-                child: SizedBox(
-                  height: 70,
-                  //https://www.pngwing.com/en/free-png-zqryl
-                  child: Image.asset(
-                    "images/coffee.png",
-                    fit: BoxFit.fitHeight,
-                  ),
-                )),
           ),
         ),
       ),
+      Positioned(
+          right: 80,
+          bottom: 60,
+          child: CupTransition(
+              //적용 전
+              // animation: animation,
+              movingAnim: widget.cupMovingAnimation,
+              rotationAnim: widget.cupRotateAnimation,
+              opacityAnim: widget.cupOpacityAnimation,
+              child: SizedBox(
+                height: 70,
+                //https://www.pngwing.com/en/free-png-zqryl
+                child: Image.asset(
+                  "images/coffee.png",
+                  fit: BoxFit.fitHeight,
+                ),
+              ))),
       const Align(
           alignment: Alignment.bottomCenter,
           child: Divider(
@@ -318,8 +374,9 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(17),
-                            color:
-                                isMenu1Selected ? Colors.blue : Colors.white),
+                            color: isMenu1Selected
+                                ? const Color.fromARGB(255, 2, 58, 105)
+                                : Colors.white),
                         child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 25),
@@ -368,36 +425,32 @@ class ShakeCurve extends Curve {
   }
 }
 
-class GrowTransition extends StatelessWidget {
-  const GrowTransition({
+class CupTransition extends StatelessWidget {
+  const CupTransition({
     super.key,
     required this.child,
     // required this.animation,
     required this.movingAnim,
     required this.rotationAnim,
+    required this.opacityAnim,
   });
 
   final Widget child;
   // final Animation<double> animation;
   final Animation<Offset> movingAnim;
   final Animation<double> rotationAnim;
+  final Animation<double> opacityAnim;
 
   @override
   Widget build(BuildContext context) {
     return Align(
-        alignment: Alignment.bottomCenter,
-        child: AnimatedBuilder(
-            animation: movingAnim,
-            builder: (context, child) {
-              return SlideTransition(
-                position: movingAnim,
-                child: RotationTransition(
-                    turns: rotationAnim,
-                    // alignment: Alignment.bottomCenter,
-                    child: child),
-              );
-              // return RotationTransition(turns: rotationAnim, child: child);
-            },
-            child: child));
+        alignment: Alignment.bottomRight,
+        child: FadeTransition(
+          opacity: opacityAnim,
+          child: SlideTransition(
+            position: movingAnim,
+            child: RotationTransition(turns: rotationAnim, child: child),
+          ),
+        ));
   }
 }

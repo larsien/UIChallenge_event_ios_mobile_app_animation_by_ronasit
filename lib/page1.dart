@@ -29,7 +29,7 @@ class MyHome extends StatefulWidget {
 class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
   late final AnimationController controller =
       AnimationController(vsync: this, duration: const Duration(seconds: 1));
-  List headers = <String>[];
+
   late Animation<Offset> animation;
   @override
   void initState() {
@@ -63,12 +63,13 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
           child: const Icon(
             Icons.search,
           )),
+//적용 후
       body: Column(
         children: [
           const SizedBox(height: 40),
           SlideTransition(position: animation, child: const HeaderList()),
           const SizedBox(height: 20),
-          MainBody(slideAnimation: animation),
+          SlideTransition(position: animation, child: const MainBody()),
         ],
       ),
     );
@@ -76,11 +77,10 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
 
   Route _createRoute() {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const LastResultPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        pageBuilder: (_, __, ___) => const LastResultPage(),
+        transitionDuration: const Duration(seconds: 1),
+        transitionsBuilder: (_, animation, secondaryAnimation, child) {
           final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);
-          // var tween2 = tween.chain(curveTween);
           return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: FadeTransition(opacity: opacityTween, child: child));
@@ -91,34 +91,27 @@ class _MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
 class MainBody extends StatelessWidget {
   const MainBody({
     Key? key,
-    required this.slideAnimation,
   }) : super(key: key);
-
-  final Animation<Offset> slideAnimation;
 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: slideAnimation,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          height: 340,
-          child: ListView.builder(
-            padding: const EdgeInsets.only(
-              left: 20,
-              bottom: 40,
-            ),
-            scrollDirection: Axis.horizontal,
-            itemCount: 3,
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              return const CardContent();
-            },
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        height: 340,
+        child: ListView.builder(
+          padding: const EdgeInsets.only(
+            left: 20,
+            bottom: 40,
           ),
+          scrollDirection: Axis.horizontal,
+          itemCount: 3,
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            return const CardContent();
+          },
         ),
       ),
-      // ),
     );
   }
 }
