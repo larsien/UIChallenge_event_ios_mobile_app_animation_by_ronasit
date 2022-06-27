@@ -2,7 +2,7 @@ import 'package:event_ios_mobile_app_animation_by_ronasit/common.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-import 'Page3.dart';
+import 'page3.dart';
 
 class Page2 extends StatefulWidget {
   const Page2({super.key});
@@ -107,7 +107,7 @@ class Body extends StatelessWidget {
 
   Route delayedRoute(int index) {
     return PageRouteBuilder(
-      pageBuilder: (_, __, ___) => DetailPage(index),
+      pageBuilder: (_, __, ___) => Page3(index),
       transitionDuration: const Duration(milliseconds: 1200),
     );
   }

@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'common.dart';
 
-class DetailPage extends StatefulWidget {
-  const DetailPage(this.index, {super.key});
+class Page3 extends StatefulWidget {
+  const Page3(this.index, {super.key});
   final int index;
 
   @override
-  State<DetailPage> createState() => _DetailPageState();
+  State<Page3> createState() => _Page3State();
 }
 
-class _DetailPageState extends State<DetailPage>
-    with SingleTickerProviderStateMixin {
+class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
   late Animation<double> calendarScaleAnimation;
   late Animation<double>
       gpsAnimation; //scale for icon and fade in for location text
@@ -58,13 +57,10 @@ class _DetailPageState extends State<DetailPage>
         mainBodySlideAnimation: mainBodySlideAnimation,
         mainTimeFadeInAnimation: mainTimeFadeInAnimation,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: DetailContent(
-          index: widget.index,
-          detailBodyFadeInAnimation: mainTimeFadeInAnimation,
-          detailBodySlideAnimation: mainBodySlideAnimation,
-        ),
+      body: DetailContent(
+        index: widget.index,
+        detailBodyFadeInAnimation: mainTimeFadeInAnimation,
+        detailBodySlideAnimation: mainBodySlideAnimation,
       ),
     );
   }
@@ -88,17 +84,21 @@ class DetailContent extends StatelessWidget {
       position: detailBodySlideAnimation,
       child: FadeTransition(
         opacity: detailBodyFadeInAnimation,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-                height: 40, child: Text(sampleContentList[index]["content"]!)),
-            const SizedBox(
-                height: 20,
-                child: Text("See more ",
-                    style: TextStyle(fontWeight: FontWeight.bold))),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                  height: 40,
+                  child: Text(sampleContentList[index]["content"]!)),
+              const SizedBox(
+                  height: 20,
+                  child: Text("See more ",
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+            ],
+          ),
         ),
       ),
     );
