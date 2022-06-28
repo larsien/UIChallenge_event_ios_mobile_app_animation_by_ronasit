@@ -48,12 +48,9 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
               children: [
                 Positioned(
                   top: 300,
-                  child: SlideTransition(
-                    position: mainBodySlideAnimation,
-                    child: BodyMainInfoWidget(
-                      index: widget.index,
-                      controller: controller,
-                    ),
+                  child: BodyMainInfoWidget(
+                    index: widget.index,
+                    controller: controller,
                   ),
                 ),
                 DetailContent(
