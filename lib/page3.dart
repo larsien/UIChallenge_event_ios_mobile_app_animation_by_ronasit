@@ -42,25 +42,25 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
         HeaderAppBar(index: widget.index, controller: controller),
         SlideTransition(
             position: mainBodySlideAnimation,
-            child: FadeTransition(
-              opacity: mainTimeFadeInAnimation,
-              child: Column(
-                children: [
-                  Positioned(
-                    top: 300,
-                    child: SlideTransition(
-                      position: mainBodySlideAnimation,
-                      child: BodyMainInfoWidget(
-                        index: widget.index,
-                        controller: controller,
-                      ),
+            // child: FadeTransition(
+            //   opacity: mainTimeFadeInAnimation,
+            child: Column(
+              children: [
+                Positioned(
+                  top: 300,
+                  child: SlideTransition(
+                    position: mainBodySlideAnimation,
+                    child: BodyMainInfoWidget(
+                      index: widget.index,
+                      controller: controller,
                     ),
                   ),
-                  DetailContent(
-                    index: widget.index,
-                  ),
-                ],
-              ),
+                ),
+                DetailContent(
+                  index: widget.index,
+                ),
+              ],
+              // ),
             )),
       ],
     ));
