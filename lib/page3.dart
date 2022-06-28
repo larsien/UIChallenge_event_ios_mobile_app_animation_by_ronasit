@@ -11,10 +11,6 @@ class Page3 extends StatefulWidget {
 }
 
 class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
-  late Animation<double> calendarScaleAnimation;
-  late Animation<double>
-      gpsAnimation; //scale for icon and fade in for location text
-  late Animation<double> timerScaleAnimation;
   late Animation<Offset> mainBodySlideAnimation;
   late Animation<double> mainTimeFadeInAnimation;
   late AnimationController controller;
@@ -24,45 +20,50 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
     super.initState();
     controller =
         AnimationController(duration: const Duration(seconds: 2), vsync: this);
-    calendarScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    mainTimeFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: controller,
-            curve: const Interval(0.0, 0.7, curve: Curves.ease)));
-    gpsAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.25, 0.7, curve: Curves.ease)));
-    timerScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+            curve: const Interval(0.5, 1.0, curve: Curves.ease)));
     mainBodySlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0), end: const Offset(0, -0.1))
             .animate(CurvedAnimation(
                 parent: controller,
                 curve: const Interval(0.5, 1.0, curve: Curves.ease)));
-    mainTimeFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: controller,
-            curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+
     controller.forward();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: HeaderAppBar(
-        index: widget.index,
-        calendarScaleAnimation: calendarScaleAnimation,
-        gpsScaleAnimation: gpsAnimation,
-        timerScaleAnimation: timerScaleAnimation,
-        mainBodySlideAnimation: mainBodySlideAnimation,
-        mainTimeFadeInAnimation: mainTimeFadeInAnimation,
-      ),
-      body: DetailContent(
-        index: widget.index,
-        detailBodyFadeInAnimation: mainTimeFadeInAnimation,
-        detailBodySlideAnimation: mainBodySlideAnimation,
-      ),
-    );
+        // appBar: HeaderAppBar(index: widget.index, controller: controller),
+        body: Column(
+      children: [
+        HeaderAppBar(index: widget.index, controller: controller),
+        SlideTransition(
+            position: mainBodySlideAnimation,
+            child: FadeTransition(
+              opacity: mainTimeFadeInAnimation,
+              child: Column(
+                children: [
+                  Positioned(
+                    top: 300,
+                    child: SlideTransition(
+                      position: mainBodySlideAnimation,
+                      child: BodyMainInfoWidget(
+                        index: widget.index,
+                        controller: controller,
+                      ),
+                    ),
+                  ),
+                  DetailContent(
+                    index: widget.index,
+                  ),
+                ],
+              ),
+            )),
+      ],
+    ));
   }
 }
 
@@ -70,62 +71,76 @@ class DetailContent extends StatelessWidget {
   const DetailContent({
     super.key,
     required this.index,
-    required this.detailBodySlideAnimation,
-    required this.detailBodyFadeInAnimation,
   });
 
   final int index;
-  final Animation<Offset> detailBodySlideAnimation;
-  final Animation<double> detailBodyFadeInAnimation;
 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: detailBodySlideAnimation,
-      child: FadeTransition(
-        opacity: detailBodyFadeInAnimation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(
-                  height: 40,
-                  child: Text(sampleContentList[index]["content"]!)),
-              const SizedBox(
-                  height: 20,
-                  child: Text("See more ",
-                      style: TextStyle(fontWeight: FontWeight.bold))),
-            ],
-          ),
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(
+              height: 40, child: Text(sampleContentList[index]["content"]!)),
+          const SizedBox(
+              height: 20,
+              child: Text("See more ",
+                  style: TextStyle(fontWeight: FontWeight.bold))),
+        ],
       ),
     );
   }
 }
 
-class BodyMainInfoWidget extends StatelessWidget {
+class BodyMainInfoWidget extends StatefulWidget {
   const BodyMainInfoWidget({
     super.key,
-    required this.calendarScaleAnimation,
-    required this.gpsScaleAnimation,
-    required this.timerScaleAnimation,
-    required this.mainFadeInAnimation,
     required this.index,
+    required this.controller,
   });
 
-  final Animation<double> calendarScaleAnimation;
-  final Animation<double> gpsScaleAnimation;
-  final Animation<double> timerScaleAnimation;
-  final Animation<double> mainFadeInAnimation;
   final int index;
+  final AnimationController controller;
+
+  @override
+  State<BodyMainInfoWidget> createState() => _BodyMainInfoWidgetState();
+}
+
+class _BodyMainInfoWidgetState extends State<BodyMainInfoWidget> {
+  late final Animation<double> calendarScaleAnimation;
+  late final Animation<double> gpsIconScaleAnimation;
+  late final Animation<double> timerScaleAnimation;
+  late final Animation<double> mainTimeFadeInAnimation;
+  late AnimationController controller;
+  @override
+  void initState() {
+    super.initState();
+    controller = widget.controller;
+    mainTimeFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: controller,
+            curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+    calendarScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: controller,
+            curve: const Interval(0.0, 0.7, curve: Curves.ease)));
+    gpsIconScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.25, 0.7, curve: Curves.ease)));
+    timerScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28.0),
       child: Hero(
-        tag: "content$index",
+        tag: "content${widget.index}",
         child: Card(
           elevation: 10,
           shape: const RoundedRectangleBorder(
@@ -144,7 +159,7 @@ class BodyMainInfoWidget extends StatelessWidget {
                     const SizedBox(width: 10),
                     SizedBox(
                       width: 192,
-                      child: Text(sampleContentList[index]["title"]!,
+                      child: Text(sampleContentList[widget.index]["title"]!,
                           maxLines: 2,
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold)),
@@ -157,15 +172,16 @@ class BodyMainInfoWidget extends StatelessWidget {
                 Row(
                   children: [
                     ScaleTransition(
-                        scale: gpsScaleAnimation,
+                        scale: gpsIconScaleAnimation,
                         child: const Icon(
                           Icons.location_pin,
                           color: Color(primaryRedColor),
                         )),
                     const SizedBox(width: 5),
                     FadeTransition(
-                        opacity: gpsScaleAnimation,
-                        child: Text(sampleContentList[index]["location"]!))
+                        opacity: gpsIconScaleAnimation,
+                        child:
+                            Text(sampleContentList[widget.index]["location"]!))
                   ],
                 ),
                 const SizedBox(
@@ -182,7 +198,7 @@ class BodyMainInfoWidget extends StatelessWidget {
                         )),
                     const SizedBox(width: 5),
                     FadeTransition(
-                        opacity: mainFadeInAnimation,
+                        opacity: timerScaleAnimation,
                         child: const Text("8:00 AM - 10:00 PM"))
                   ],
                 ),
@@ -195,60 +211,48 @@ class BodyMainInfoWidget extends StatelessWidget {
   }
 }
 
-class HeaderAppBar extends StatelessWidget with PreferredSizeWidget {
+class HeaderAppBar extends StatefulWidget with PreferredSizeWidget {
   const HeaderAppBar(
-      {super.key,
-      required this.index,
-      required this.calendarScaleAnimation,
-      required this.gpsScaleAnimation,
-      required this.timerScaleAnimation,
-      required this.mainBodySlideAnimation,
-      required this.mainTimeFadeInAnimation});
-  final Animation<double> calendarScaleAnimation;
-  final Animation<double> gpsScaleAnimation;
-  final Animation<double> timerScaleAnimation;
-  final Animation<Offset> mainBodySlideAnimation;
-  final Animation<double> mainTimeFadeInAnimation;
+      {super.key, required this.index, required this.controller});
 
   final int index;
+  final AnimationController controller;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 500,
-      child: Stack(
-        children: [
-          Hero(
-              tag: "test$index",
-              child: Container(
-                height: 300,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage(
-                          "images/pug.jpeg",
-                        )),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(30),
-                    )),
-              )),
-          Positioned(
-            top: 300,
-            child: SlideTransition(
-              position: mainBodySlideAnimation,
-              child: BodyMainInfoWidget(
-                  index: index,
-                  calendarScaleAnimation: calendarScaleAnimation,
-                  gpsScaleAnimation: gpsScaleAnimation,
-                  timerScaleAnimation: timerScaleAnimation,
-                  mainFadeInAnimation: mainTimeFadeInAnimation),
-            ),
-          ),
-        ],
-      ),
-    );
+  State<HeaderAppBar> createState() => _HeaderAppBarState();
+  @override
+  Size get preferredSize => const Size(500, 300);
+}
+
+class _HeaderAppBarState extends State<HeaderAppBar> {
+  late final Animation<Offset> headerBodySlideAnimation;
+
+  @override
+  void initState() {
+    headerBodySlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0), end: const Offset(0, -0.1))
+            .animate(CurvedAnimation(
+                parent: widget.controller,
+                curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+
+    super.initState();
   }
 
   @override
-  Size get preferredSize => const Size(500, 500);
+  Widget build(BuildContext context) {
+    return Hero(
+        tag: "test${widget.index}",
+        child: Container(
+          height: 300,
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage(
+                    "images/pug.jpeg",
+                  )),
+              borderRadius: BorderRadius.all(
+                Radius.circular(30),
+              )),
+        ));
+  }
 }

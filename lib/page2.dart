@@ -31,10 +31,7 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
     controller.forward();
   }
-  // Widget ListItemAnimation(Animation<double> Widget child){
-  //   return
 
-  // }
   List<bool> boolList = [true, true, true];
   @override
   Widget build(BuildContext context) {
@@ -388,7 +385,9 @@ class _MenuBarState extends State<MenuBar> {
                   child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(17),
-                          color: isMenu1Selected ? Colors.white : Colors.blue),
+                          color: isMenu1Selected
+                              ? Colors.white
+                              : const Color.fromARGB(255, 2, 58, 105)),
                       child: Padding(
                           padding: const EdgeInsets.all(10),
                           child: Text('Organizers',
