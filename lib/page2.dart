@@ -13,9 +13,9 @@ class Page2 extends StatefulWidget {
 
 class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
   // late Animation<double> animation;
-  late AnimationController controller;
-  late Animation<double> headerTextOpacityAnimation;
-  late Animation<Offset> headerTextMovingAnimation;
+  late final AnimationController controller;
+  late final Animation<double> headerTextFadeInAnimation;
+  late final Animation<Offset> headerTextSlideUpAnimation;
 
   @override
   void initState() {
@@ -23,10 +23,10 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
     controller =
         AnimationController(duration: const Duration(seconds: 3), vsync: this);
     //for text
-    headerTextOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    headerTextFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
 
-    headerTextMovingAnimation = Tween<Offset>(
+    headerTextSlideUpAnimation = Tween<Offset>(
             begin: const Offset(0, 1), end: const Offset(0, 0))
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
     controller.forward();
@@ -43,9 +43,9 @@ class _Page2State extends State<Page2> with SingleTickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FadeTransition(
-              opacity: headerTextOpacityAnimation,
+              opacity: headerTextFadeInAnimation,
               child: SlideTransition(
-                position: headerTextMovingAnimation,
+                position: headerTextSlideUpAnimation,
                 child: const Header(),
               ),
             ),
@@ -263,9 +263,9 @@ class CustomCoffeeAppBar extends StatefulWidget with PreferredSizeWidget {
 
 class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
   late AnimationController controller;
-  late Animation<Offset> cupMovingAnimation;
+  late Animation<Offset> cupSlideUpAnimation;
   late Animation<double> cupRotateAnimation;
-  late Animation<double> cupOpacityAnimation;
+  late Animation<double> cupFadeInAnimation;
   late Animation<int> textStepAnimation;
   final String appBarSearchText = "Search for ...";
   @override
@@ -274,11 +274,11 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
     //for cup
     cupRotateAnimation = Tween(begin: 0.0, end: 0.07).animate(
         CurvedAnimation(parent: controller, curve: const ShakeCurve(count: 3)));
-    cupMovingAnimation = Tween(
+    cupSlideUpAnimation = Tween(
             begin: const Offset(0, 1), end: const Offset(0, 0))
         .animate(CurvedAnimation(parent: controller, curve: Curves.elasticOut));
 
-    cupOpacityAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    cupFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: controller, curve: Curves.easeOutCubic));
     textStepAnimation = StepTween(begin: 0, end: appBarSearchText.length)
         .animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
@@ -290,7 +290,7 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
   Widget build(BuildContext context) {
     return Stack(children: [
       FadeTransition(
-        opacity: cupOpacityAnimation,
+        opacity: cupFadeInAnimation,
         child: const AppBarBackground(),
       ),
       Align(
@@ -298,9 +298,9 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
         child: CupTransition(
             //적용 전
             // animation: animation,
-            movingAnim: cupMovingAnimation,
+            movingAnim: cupSlideUpAnimation,
             rotationAnim: cupRotateAnimation,
-            opacityAnim: cupOpacityAnimation,
+            opacityAnim: cupFadeInAnimation,
             child: SizedBox(
               height: 70,
               //https://www.pngwing.com/en/free-png-zqryl
@@ -312,7 +312,7 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
       ),
       const AppBarBottomWhiteBackground(),
       SearchForTextWidget(
-        cupOpacityAnimation: cupOpacityAnimation,
+        cupOpacityAnimation: cupFadeInAnimation,
         textStepAnimation: textStepAnimation,
         appBarSearchText: appBarSearchText,
       ),

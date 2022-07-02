@@ -11,9 +11,9 @@ class Page3 extends StatefulWidget {
 }
 
 class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
-  late Animation<Offset> mainBodySlideAnimation;
-  late Animation<double> mainTimeFadeInAnimation;
-  late AnimationController controller;
+  late final Animation<Offset> mainBodySlideUpAnimation;
+  late final Animation<double> mainTimeFadeInAnimation;
+  late final AnimationController controller;
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
         CurvedAnimation(
             parent: controller,
             curve: const Interval(0.5, 1.0, curve: Curves.ease)));
-    mainBodySlideAnimation =
+    mainBodySlideUpAnimation =
         Tween<Offset>(begin: const Offset(0, 0), end: const Offset(0, -0.1))
             .animate(CurvedAnimation(
                 parent: controller,
@@ -41,7 +41,7 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
       children: [
         HeaderAppBar(index: widget.index, controller: controller),
         SlideTransition(
-            position: mainBodySlideAnimation,
+            position: mainBodySlideUpAnimation,
             // child: FadeTransition(
             //   opacity: mainTimeFadeInAnimation,
             child: Column(
@@ -61,6 +61,12 @@ class _Page3State extends State<Page3> with SingleTickerProviderStateMixin {
             )),
       ],
     ));
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }
 
@@ -107,29 +113,33 @@ class BodyMainInfoWidget extends StatefulWidget {
 }
 
 class _BodyMainInfoWidgetState extends State<BodyMainInfoWidget> {
-  late final Animation<double> calendarScaleAnimation;
-  late final Animation<double> gpsIconScaleAnimation;
-  late final Animation<double> timerScaleAnimation;
-  late final Animation<double> mainTimeFadeInAnimation;
+  late final Animation<double> calendarScaleUpAnimation;
+  late final Animation<double> gpsIconScaleUpFadeInAnimation;
+  late final Animation<double> timerScaleUpFadeInAnimation;
+  // late final Animation<double> timerFadeInAnimation;
   late AnimationController controller;
   @override
   void initState() {
     super.initState();
     controller = widget.controller;
-    mainTimeFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: controller,
-            curve: const Interval(0.5, 1.0, curve: Curves.ease)));
-    calendarScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    // timerFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    //     CurvedAnimation(
+    //         parent: controller,
+    //         curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+    calendarScaleUpAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: controller,
             curve: const Interval(0.0, 0.7, curve: Curves.ease)));
-    gpsIconScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.25, 0.7, curve: Curves.ease)));
-    timerScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.5, 1.0, curve: Curves.ease)));
+    //for scale, fade in
+    gpsIconScaleUpFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: controller,
+            curve: const Interval(0.25, 0.7, curve: Curves.ease)));
+    //for scale, fade in
+    timerScaleUpFadeInAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: controller,
+            curve: const Interval(0.5, 1.0, curve: Curves.ease)));
   }
 
   @override
@@ -150,7 +160,7 @@ class _BodyMainInfoWidgetState extends State<BodyMainInfoWidget> {
                 Row(
                   children: [
                     ScaleTransition(
-                      scale: calendarScaleAnimation,
+                      scale: calendarScaleUpAnimation,
                       child: const Calendar(),
                     ),
                     const SizedBox(width: 10),
@@ -169,14 +179,14 @@ class _BodyMainInfoWidgetState extends State<BodyMainInfoWidget> {
                 Row(
                   children: [
                     ScaleTransition(
-                        scale: gpsIconScaleAnimation,
+                        scale: gpsIconScaleUpFadeInAnimation,
                         child: const Icon(
                           Icons.location_pin,
                           color: Color(primaryRedColor),
                         )),
                     const SizedBox(width: 5),
                     FadeTransition(
-                        opacity: gpsIconScaleAnimation,
+                        opacity: gpsIconScaleUpFadeInAnimation,
                         child:
                             Text(sampleContentList[widget.index]["location"]!))
                   ],
@@ -188,14 +198,14 @@ class _BodyMainInfoWidgetState extends State<BodyMainInfoWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ScaleTransition(
-                        scale: timerScaleAnimation,
+                        scale: timerScaleUpFadeInAnimation,
                         child: const Icon(
                           Icons.access_time_filled,
                           color: Color(primaryRedColor),
                         )),
                     const SizedBox(width: 5),
                     FadeTransition(
-                        opacity: timerScaleAnimation,
+                        opacity: timerScaleUpFadeInAnimation,
                         child: const Text("8:00 AM - 10:00 PM"))
                   ],
                 ),

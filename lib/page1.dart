@@ -6,7 +6,6 @@ import 'page2.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,15 +26,15 @@ class Page1 extends StatefulWidget {
 }
 
 class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
-  late final AnimationController controller =
-      AnimationController(vsync: this, duration: const Duration(seconds: 1));
-
-  late Animation<Offset> animation;
+  late final AnimationController controller;
+  late final Animation<Offset> slideRightAnimation;
   @override
   void initState() {
     super.initState();
-    animation = Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0))
-        .animate(
+    controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    slideRightAnimation =
+        Tween<Offset>(begin: Offset.zero, end: const Offset(1.0, 0.0)).animate(
             CurvedAnimation(parent: controller, curve: Curves.easeInCubic));
   }
 
@@ -54,6 +53,7 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           backgroundColor: const Color(0xFFF47C74),
           onPressed: () async {
             controller.forward();
+            //애니메이션 수행 후  다음 페지 이동하기 위해 delay 줌
             await Future.delayed(const Duration(milliseconds: 1000));
             if (mounted) {
               Navigator.push(context, _createRoute())
@@ -63,13 +63,14 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
           child: const Icon(
             Icons.search,
           )),
-      //적용 후
       body: Column(
         children: [
           const SizedBox(height: 40),
-          SlideTransition(position: animation, child: const HeaderList()),
+          SlideTransition(
+              position: slideRightAnimation, child: const HeaderList()),
           const SizedBox(height: 20),
-          SlideTransition(position: animation, child: const MainBody()),
+          SlideTransition(
+              position: slideRightAnimation, child: const MainBody()),
         ],
       ),
     );
@@ -80,18 +81,17 @@ class _Page1State extends State<Page1> with SingleTickerProviderStateMixin {
         pageBuilder: (_, __, ___) => const Page2(),
         transitionDuration: const Duration(seconds: 1),
         transitionsBuilder: (_, animation, secondaryAnimation, child) {
-          final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);
+          // final opacityTween = Tween(begin: 0.0, end: 1.0).animate(animation);
           return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: FadeTransition(opacity: opacityTween, child: child));
+              // child: FadeTransition(opacity: opacityTween, child: child));
+              child: child);
         });
   }
 }
 
 class MainBody extends StatelessWidget {
-  const MainBody({
-    Key? key,
-  }) : super(key: key);
+  const MainBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -117,15 +117,12 @@ class MainBody extends StatelessWidget {
 }
 
 class CardContent extends StatelessWidget {
-  const CardContent({
-    Key? key,
-  }) : super(key: key);
+  const CardContent({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Card(
         elevation: 10,
-        // margin: EdgeInsets.only(bottom: 40),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,7 +201,6 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         padding: const EdgeInsets.only(left: 55.0),
         child: Container(
           decoration: const BoxDecoration(
-              // shape: BoxShape.circle,
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70)),
               color: Color.fromARGB(255, 184, 222, 240)),
         ),
