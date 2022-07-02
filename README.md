@@ -3,7 +3,7 @@
 Mimic ui animation from 
 Tested in Galaxy Note 10
 
-Use AnimationController only.
+Use AnimationController, FooTransition widget only.
 
 https://www.pinterest.co.kr/pin/97953360635476341/
 
