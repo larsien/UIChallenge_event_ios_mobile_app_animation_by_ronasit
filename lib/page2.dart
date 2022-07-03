@@ -111,8 +111,7 @@ class Body extends StatelessWidget {
 }
 
 class Item extends StatelessWidget {
-  const Item({Key? key, required this.item, required this.index})
-      : super(key: key);
+  const Item({super.key, required this.item, required this.index});
 
   final Map<String, String> item;
   final int index;
@@ -158,9 +157,9 @@ class Item extends StatelessWidget {
 
 class CardImage extends StatelessWidget {
   const CardImage({
-    Key? key,
+    super.key,
     required this.item,
-  }) : super(key: key);
+  });
 
   final Map<String, String> item;
 
@@ -187,9 +186,9 @@ class CardImage extends StatelessWidget {
 
 class CardBody extends StatelessWidget {
   const CardBody({
-    Key? key,
+    super.key,
     required this.item,
-  }) : super(key: key);
+  });
 
   final Map<String, String> item;
 
@@ -236,8 +235,8 @@ class CardBody extends StatelessWidget {
 
 class Header extends StatelessWidget {
   const Header({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +321,7 @@ class _CustomCoffeeAppBarState extends State<CustomCoffeeAppBar> {
 }
 
 class MenuBar extends StatefulWidget {
-  const MenuBar({Key? key}) : super(key: key);
+  const MenuBar({super.key});
 
   @override
   State<MenuBar> createState() => _MenuBarState();
@@ -441,8 +440,8 @@ class SearchForTextWidget extends StatelessWidget {
 
 class AppBarBottomWhiteBackground extends StatelessWidget {
   const AppBarBottomWhiteBackground({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -459,8 +458,8 @@ class AppBarBottomWhiteBackground extends StatelessWidget {
 
 class AppBarBackground extends StatelessWidget {
   const AppBarBackground({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
